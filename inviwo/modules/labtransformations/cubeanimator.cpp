@@ -60,7 +60,7 @@ void CubeAnimator::process()
 
     // Transform the mesh (TODO)
     matrix *= glm::translate(vec3(radius_.get(), 0, 0));
-    matrix *= glm::translate(vec3(sin(2 * radius_.get()), 0, 0));
+    matrix *= glm::translate(vec3(sin(2 * theta_.get()), 0, 0));
     matrix *= glm::rotate(vec3(theta_.get(), 0, 0));
 
     // Update
