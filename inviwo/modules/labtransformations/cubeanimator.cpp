@@ -38,7 +38,7 @@ CubeAnimator::CubeAnimator()
     // For a FloatProperty 
     // variablename(identifier, display name, init value, minvalue, maxvalue)
     , radius_("radius", "Radius", 6, 1, 8)
-    , theta_("theta", "Angle", 0.01, 0, 3.14159265358979323846) {
+    , theta_("theta", "Angle", 0.01, 0, 3.14159265358979323846*2) {
     // Add ports
     addPort(meshIn_);
     addPort(meshOut_);
@@ -59,9 +59,9 @@ void CubeAnimator::process()
     auto matrix = mesh->getWorldMatrix();
 
     // Transform the mesh (TODO)
+    matrix *= glm::rotate(theta_.get(), vec3(0, 0, 1));
     matrix *= glm::translate(vec3(radius_.get(), 0, 0));
-    matrix *= glm::translate(vec3(sin(2 * theta_.get()), 0, 0));
-    matrix *= glm::rotate(vec3(theta_.get(), 0, 0));
+    matrix *= glm::translate(vec3(sin(8 * theta_.get()), 0, 0));
 
     // Update
     mesh->setWorldMatrix(matrix);
