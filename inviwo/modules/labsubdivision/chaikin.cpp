@@ -65,6 +65,7 @@ void Chaikin::CornerCutting(const std::vector<vec3>& ControlPolygon,
     // How many intermediate points each pair of points shall be divided upon. (One point at 1/3 and one at 2/3).
     int divison_ratio = 3;
     
+    //
     std::vector<glm::vec3> temp_Curve;
     Curve = ControlPolygon;
     
@@ -76,7 +77,15 @@ void Chaikin::CornerCutting(const std::vector<vec3>& ControlPolygon,
         {
             const vec3& LeftPoint = temp_Curve[i];
             const vec3& RightPoint = temp_Curve[(i+1) % temp_Curve.size()];
-
+            
+            // Extra assignment (line 81-86)
+            float difference1 = LeftPoint[0] - RightPoint[0];
+            float difference2 = LeftPoint[1] - RightPoint[1];
+            if (difference1 == 0 or difference2 == 0){
+                Curve.push_back((LeftPoint + RightPoint)/2);
+                continue;
+            }
+            
             //Linearly interpolate between left and right point in the t-interval [0,1)
             for(int j=1;j<divison_ratio;j++)
             {
