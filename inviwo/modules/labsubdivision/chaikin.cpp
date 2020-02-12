@@ -54,16 +54,17 @@ void Chaikin::CornerCutting(const std::vector<vec3>& ControlPolygon,
 {
     //TODO: Extend and edit this code
 
+    
+    // How many intermediate points each pair of points shall be divided upon.
+    int intermediate_points = 3;
+    
     // Calculate number of refinements (points = number of points in our final curve).
     size_t points = ControlPolygon.size();
     size_t refinements = 0;
     while (MinNumDesiredPoints > points){
-        points = points * 2 - 2;
+        points = points * intermediate_points - 2;
         refinements += 1;
     }
-    
-    // How many intermediate points each pair of points shall be divided upon. (One point at 1/3 and one at 2/3).
-    int divison_ratio = 3;
     
     //
     std::vector<glm::vec3> temp_Curve;
@@ -78,18 +79,20 @@ void Chaikin::CornerCutting(const std::vector<vec3>& ControlPolygon,
             const vec3& LeftPoint = temp_Curve[i];
             const vec3& RightPoint = temp_Curve[(i+1) % temp_Curve.size()];
             
-            // Extra assignment (line 81-86)
-            float difference1 = LeftPoint[0] - RightPoint[0];
-            float difference2 = LeftPoint[1] - RightPoint[1];
-            if (difference1 == 0 or difference2 == 0){
-                Curve.push_back((LeftPoint + RightPoint)/2);
-                continue;
+            // Extra assignment (line 82-90)
+            float difference1 = abs(LeftPoint[0] - RightPoint[0]);
+            float difference2 = abs(LeftPoint[1] - RightPoint[1]);
+            if (difference1 < 0.3){
+                if (difference2 < 0.3){
+                    Curve.push_back((LeftPoint + RightPoint)/2);
+                    continue;
+                }
             }
-            
+
             //Linearly interpolate between left and right point in the t-interval [0,1)
-            for(int j=1;j<divison_ratio;j++)
+            for(int j=1;j<intermediate_points+1;j++)
             {
-                const float t = float(j) / float(divison_ratio); //Gives values from 0 to almost 1
+                const float t = float(j) / float(intermediate_points+1); //Gives values from 0 to almost 1
                 Curve.push_back((1-t) * LeftPoint + t * RightPoint);
             }
         }
