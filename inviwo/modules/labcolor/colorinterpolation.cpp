@@ -31,10 +31,9 @@ ColorSpace::Rgb InterpolateInRGB(const ColorSpace::Rgb& ColorA, const ColorSpace
                                  const float t) {
     ColorSpace::Rgb InterpolatedColor;
 
-    InterpolatedColor.r = ColorA.r + (ColorB.r - ColorA.r) * t;
-    InterpolatedColor.g = ColorA.g + (ColorB.g - ColorA.g) * t;
-    InterpolatedColor.b = ColorA.b + (ColorB.b - ColorA.b) * t;
-    
+    InterpolatedColor.r = (1-t)*ColorA.r + t*ColorB.r;
+    InterpolatedColor.g = (1-t)*ColorA.g + t*ColorB.g;
+    InterpolatedColor.b = (1-t)*ColorA.b + t*ColorB.b;    
 
     return InterpolatedColor;
 }
@@ -57,10 +56,10 @@ ColorSpace::Cmyk InterpolateInCMYK(const ColorSpace::Cmyk& ColorA, const ColorSp
                                    const float t) {
     ColorSpace::Cmyk InterpolatedColor;
 
-    InterpolatedColor.c = ColorA.c + (ColorB.c - ColorA.c) * t;
-    InterpolatedColor.m = ColorA.m + (ColorB.m - ColorA.m) * t;
-    InterpolatedColor.y = ColorA.y + (ColorB.y - ColorA.y) * t;
-    InterpolatedColor.k = ColorA.k + (ColorB.m - ColorA.k) * t;
+    InterpolatedColor.c = (1-t) * ColorA.c + t*ColorB.c;
+    InterpolatedColor.m = (1-t) * ColorA.m + t*ColorB.m;
+    InterpolatedColor.y = (1-t) * ColorA.y + t * ColorB.y;
+    InterpolatedColor.k = (1-t) * ColorA.k + t * ColorB.k;
 
     return InterpolatedColor;
 }
@@ -82,10 +81,33 @@ ColorSpace::Hsv InterpolateInHSV(const ColorSpace::Hsv& ColorA, const ColorSpace
                                  const float t) {
     ColorSpace::Hsv InterpolatedColor;
 
-    InterpolatedColor.h = ColorA.h + (ColorB.h - ColorA.h) * t;
-     InterpolatedColor.s = ColorA.s + (ColorB.s - ColorA.s) * t;
-     InterpolatedColor.v = ColorA.v + (ColorB.v - ColorA.v) * t;
-     
+    // InterpolatedColor.h = (1-t) * ColorA.h + t*ColorB.h;
+    InterpolatedColor.s = (1-t) * ColorA.s + t*ColorB.s;
+    InterpolatedColor.v = (1-t) * ColorA.v + t*ColorB.v;
+
+    // https://www.alanzucconi.com/2016/01/06/colour-interpolation/2/
+    int difference = ColorA.h - ColorB.h;
+    int mod_difference = abs(difference) % 360;
+    if (mod_difference > 180) {
+        mod_difference = 360 - mod_difference;
+    }
+
+    if (abs(difference) < 180) {
+        if ((ColorA.h - ColorB.h) < 0) {
+            InterpolatedColor.h = ColorA.h + t * mod_difference;
+        } else {
+            InterpolatedColor.h = ColorB.h + (1-t) * mod_difference;
+        }
+    } else {
+        if (difference < 0) {
+            int tmp = ColorB.h + (1-t) * mod_difference;
+            InterpolatedColor.h = tmp % 360;
+        } else {
+            int tmp = ColorA.h + t * mod_difference;
+            InterpolatedColor.h = tmp % 360;
+        }
+    }
+
     return InterpolatedColor;
 }
 

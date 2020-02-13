@@ -83,6 +83,9 @@ vec3 ColorMixing::AdditiveColorMixing(const vec3& Color1, const vec3& Color2)
 vec3 ColorMixing::SubtractiveColorMixing(const vec3& ColorIncomingLight, const vec3& ColorSurface)
 {
     vec3 MixedColor;
+
+    // By introducing a completely white color and taking the difference, we effectively do the
+    // opposite compared to what we do in AdditiveColorMixing().
     vec3 White(1,1,1);
 
     MixedColor = ColorIncomingLight - (White - ColorSurface);
