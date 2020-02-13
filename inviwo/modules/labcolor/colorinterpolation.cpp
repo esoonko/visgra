@@ -86,28 +86,24 @@ ColorSpace::Hsv InterpolateInHSV(const ColorSpace::Hsv& ColorA, const ColorSpace
     InterpolatedColor.v = (1-t) * ColorA.v + t*ColorB.v;
 
     // https://www.alanzucconi.com/2016/01/06/colour-interpolation/2/
-    int difference = ColorA.h - ColorB.h;
-    int mod_difference = abs(difference) % 360;
-    if (mod_difference > 180) {
-        mod_difference = 360 - mod_difference;
-    }
-
-    if (abs(difference) < 180) {
-        if ((ColorA.h - ColorB.h) < 0) {
-            InterpolatedColor.h = ColorA.h + t * mod_difference;
-        } else {
-            InterpolatedColor.h = ColorB.h + (1-t) * mod_difference;
-        }
+    int small_h;
+    int big_h;
+    int diff = ColorA.h - ColorB.h;
+    if (ColorA.h > ColorB.h) {
+        small_h = ColorB.h;
+        big_h = ColorA.h;
+        float t = 1 - t;
     } else {
-        if (difference < 0) {
-            int tmp = ColorB.h + (1-t) * mod_difference;
-            InterpolatedColor.h = tmp % 360;
-        } else {
-            int tmp = ColorA.h + t * mod_difference;
-            InterpolatedColor.h = tmp % 360;
-        }
+        small_h = ColorA.h;
+        big_h = ColorB.h;
+        diff = -diff;
     }
 
+    if (diff > 180) {
+        InterpolatedColor.h = (int)(small_h + 360 + t * (big_h - small_h - 360)) % 360;
+    } else {
+        InterpolatedColor.h = small_h + t * diff;
+    }
     return InterpolatedColor;
 }
 
