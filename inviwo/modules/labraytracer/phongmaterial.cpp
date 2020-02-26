@@ -48,6 +48,12 @@ vec4 PhongMaterial::shade(const RayIntersection& intersection, const Light& ligh
     // 5. You have to take into account shininess_ (p), material colors, light colors
     //    light, view, reflection and normal vector.
 
+
+	//distance 
+	vec3 distanceVector = light.getPosition() - intersection.getPosition();
+    double distance = length(distanceVector);
+    double distanceSquared = pow(distance, 2);
+
     // Specular (glossy) part.
     vec3 N_normalized = Util::normalize(N);
     vec3 N2 = Util::scalarMult(2, N_normalized);
@@ -63,15 +69,12 @@ vec4 PhongMaterial::shade(const RayIntersection& intersection, const Light& ligh
 
     double tmp2 = std::max(double(dot(R_normalized, V_normalized)), double(0.0));
     vec3 c_specular = vec3(
-      specularMatierialColor_[0] * light.getSpecularColor()[0] * pow(tmp2, shininess_),
-      specularMatierialColor_[1] * light.getSpecularColor()[1] * pow(tmp2, shininess_),
-      specularMatierialColor_[2] * light.getSpecularColor()[2] * pow(tmp2, shininess_)
+      specularMatierialColor_[0] * light.getSpecularColor()[0] * pow(tmp2, shininess_) / distanceSquared,
+      specularMatierialColor_[1] * light.getSpecularColor()[1] * pow(tmp2, shininess_) / distanceSquared,
+      specularMatierialColor_[2] * light.getSpecularColor()[2] * pow(tmp2, shininess_) / distanceSquared
     );
 
     // Diffuse part.
-    vec3 distanceVector = light.getPosition() - intersection.getPosition();
-    double distance = length(distanceVector);
-    double distanceSquared = pow(distance, 2);
 
     vec3 c_diffuse = vec3(
       (diffuseMaterialColor_[0] * light.getDiffuseColor()[0] * cosNL) / distanceSquared,
