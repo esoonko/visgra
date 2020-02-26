@@ -25,13 +25,13 @@ bool Sphere::closestIntersection(const Ray& ray, double maxLambda,
 
     // If you detect an intersection, the return type should look similar to this:
     // if(rayIntersectsSphere)
-    //{
-    //  intersection = RayIntersection(ray,shared_from_this(),lambda,normalVec,uvw);
-    //  return true;
-    //}
+    // {
+    //   intersection = RayIntersection(ray,shared_from_this(),lambda,normalVec,uvw);
+    //   return true;
+    // }
     //
     // Hints:
-    // lambda is the distance form the ray origin an the intersection point.
+    // lambda is the distance form the ray origin to an the intersection point.
     // Ray origin p_r : ray.getOrigin()
     // Ray direction t_r : ray.getDirection()
     // If you need the intersection point, use ray.pointOnRay(lambda)
@@ -39,35 +39,35 @@ bool Sphere::closestIntersection(const Ray& ray, double maxLambda,
 
     const vec3 r0 = ray.getOrigin();
     const vec3 rd = ray.getDirection();
-    
-    float t = dot(center_ - r0, rd); //Center of intersection points
+
+    float t = dot(center_ - r0, rd); // Center of intersection points
     vec3 p = r0 + rd * t;
-    
+
     // Using equation of circle: x^2+y^2 = r^2 to find distance between t and intersection points.
     float y = length(center_ - p);
-    
+
     // Is there an intersection?
-    if(y<radius_){
-        float x = sqrt(radius_*radius_ - y*y);
-        float lambda1 = t-x;
-        float lambda2 = t+x;
-        
-        // Witch point to use? Using 1.
+    if (y < radius_) {
+        float x = sqrt(radius_ * radius_ - (y * y));
+        float lambda1 = t - x;
+        // float lambda2 = t + x;
+
+        // Which point to use? Using 1.
         vec3 p1 = r0 + rd * lambda1;
-        vec3 p2 = r0 + rd * lambda2;
-        
+        // vec3 p2 = r0 + rd * lambda2;
+
         // Taken from plane code
         if (lambda1 < 0 || lambda1 + Util::epsilon > maxLambda) {
             return false;
         }
-        
-        const vec3 normal_ = p1-center_;
-    
-    const vec3 uvw(0, 0, 0);
-    intersection = RayIntersection(ray, shared_from_this(), lambda1, normal_, uvw);
-    return true;
+
+        const vec3 normal_ = p1 - center_;
+
+        const vec3 uvw(0, 0, 0);
+        intersection = RayIntersection(ray, shared_from_this(), lambda1, normal_, uvw);
+        return true;
     }
-    
+
     return false;
 }
 
